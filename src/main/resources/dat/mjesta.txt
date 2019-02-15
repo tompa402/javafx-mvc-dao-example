@@ -1,0 +1,20 @@
+1
+Zagreb
+OSTALO
+21
+2
+Zavižan
+SELO
+9
+3
+Zadar
+GRAD
+13
+4
+Dugave
+OSTALO
+22
+5
+Kamena Gorica
+SELO
+5
