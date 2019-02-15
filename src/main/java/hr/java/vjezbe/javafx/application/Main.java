@@ -2,13 +2,10 @@ package hr.java.vjezbe.javafx.application;
 
 import hr.java.vjezbe.javafx.controller.PocetniEkranController;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,12 +25,6 @@ public class Main extends Application {
         this.primaryStage = stage;
         this.primaryStage.setTitle("Meteorološka postaja");
         initPocetniEkran();
-
-        // close custom running threads on javafx app exit
-        primaryStage.setOnCloseRequest(event -> {
-            Platform.exit();
-            System.exit(0);
-        });
     }
 
     private void initPocetniEkran() {

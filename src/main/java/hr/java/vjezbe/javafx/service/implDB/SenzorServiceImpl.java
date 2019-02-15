@@ -82,17 +82,6 @@ public class SenzorServiceImpl implements SenzorService {
         return deleted;
     }
 
-    @Override
-    public int getNegativeActiveSensors() {
-        int broj = -1;
-        try {
-            broj = senzorDAO.getNegativeActiveSensors();
-        } catch (DAOException ex) {
-            LOGGER.error(ex.getMessage());
-        }
-        return broj;
-    }
-
     private void mapReferences(List<Senzor> senzori) {
         List<MjernaPostaja> postaje = mjernaPostajaDAO.getAll();
         senzori.forEach(senzor ->

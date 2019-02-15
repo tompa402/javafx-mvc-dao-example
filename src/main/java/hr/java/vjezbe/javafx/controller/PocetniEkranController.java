@@ -1,13 +1,10 @@
 package hr.java.vjezbe.javafx.controller;
 
 import hr.java.vjezbe.javafx.application.Main;
-import hr.java.vjezbe.javafx.model.Model;
 import hr.java.vjezbe.javafx.model.dhmz.Grad;
 import hr.java.vjezbe.javafx.model.dhmz.Vrijeme;
 import hr.java.vjezbe.javafx.service.DHMZService;
-import hr.java.vjezbe.javafx.service.niti.SenzorThreadService;
 import hr.java.vjezbe.javafx.validator.InputValidator;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -21,9 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class PocetniEkranController {
@@ -63,11 +57,9 @@ public class PocetniEkranController {
     private Main mainApp;
     private DHMZService service;
     private ObservableList<Grad> obsGradovi;
-    private Model model;
 
     public PocetniEkranController() {
         this.service = new DHMZService();
-        this.model = new Model(true);
     }
 
     @FXML
@@ -94,9 +86,6 @@ public class PocetniEkranController {
             alert.showAndWait();
         }
         gradPostajaTable.setItems(obsGradovi);
-
-        ScheduledExecutorService executor =  Executors.newSingleThreadScheduledExecutor();
-        executor.scheduleAtFixedRate(new SenzorThreadService(model), 0, 10, TimeUnit.SECONDS);
     }
 
     private void showPostajaGradDetails(Grad gradPostaja) {
@@ -227,9 +216,8 @@ public class PocetniEkranController {
 
             // Give the controller access to the main app.
             SenzoriController controller = loader.getController();
-            controller.setModel(model);
+            //controller.setMainApp(mainApp);
         } catch (IOException ex) {
-            System.out.println(ex);
             LOGGER.error("Error occurred while changing layout: " + ex.getMessage());
         }
     }

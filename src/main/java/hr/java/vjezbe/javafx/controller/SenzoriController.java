@@ -1,7 +1,10 @@
 package hr.java.vjezbe.javafx.controller;
 
 import hr.java.vjezbe.javafx.application.Main;
-import hr.java.vjezbe.javafx.model.*;
+import hr.java.vjezbe.javafx.model.Senzor;
+import hr.java.vjezbe.javafx.model.SenzorTemperature;
+import hr.java.vjezbe.javafx.model.SenzorTlaka;
+import hr.java.vjezbe.javafx.model.SenzorVlage;
 import hr.java.vjezbe.javafx.service.SenzorService;
 import hr.java.vjezbe.javafx.service.implDB.SenzorServiceImpl;
 import hr.java.vjezbe.javafx.util.NoviSenzorConverter;
@@ -18,7 +21,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.controlsfx.control.ToggleSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,13 +56,10 @@ public class SenzoriController {
     private Label radSenzoraLabel;
     @FXML
     private ComboBox<Senzor> newSenzorCombobox;
-    @FXML
-    private ToggleSwitch snezorThreadToggle;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SenzoriController.class);
     private final SenzorService service;
     private ObservableList<Senzor> obsSenzori;
-    private Model model;
 
     public SenzoriController() {
         this.service = new SenzorServiceImpl();
@@ -85,9 +84,6 @@ public class SenzoriController {
 
         senzoriTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> showSenzorDetails(newValue));
-
-        snezorThreadToggle.selectedProperty().addListener((observable, oldValue, newValue)
-                -> model.setToggleValue(newValue));
 
         newSenzorCombobox.setItems(FXCollections.observableArrayList(
                 Arrays.asList(new SenzorTemperature(), new SenzorVlage(), new SenzorTlaka())));
@@ -258,10 +254,5 @@ public class SenzoriController {
             LOGGER.error("Error occurred while creating new/edit dialog: " + ex.getMessage());
             return false;
         }
-    }
-
-    public void setModel(Model model) {
-        this.model = model;
-        snezorThreadToggle.setSelected(model.getToggleValue());
     }
 }

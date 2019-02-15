@@ -8,5 +8,4 @@ import java.util.List;
 public interface SenzorDAO extends DAO<Senzor> {
 
     List<Senzor> getAllByPostajaId(Integer postajaId) throws DAOException;
-    int getNegativeActiveSensors() throws DAOException;
 }

@@ -68,9 +68,6 @@ public class H2SenzorDAO implements SenzorDAO {
     private static final String SQL_DELETE =
             "DELETE FROM " + TABLE + " WHERE ID = ?";
 
-    private static final String SQL_SELECT_NEGATIVE_ACTIVE =
-            "SELECT COUNT(*) AS broj FROM " + TABLE + " WHERE AKTIVAN = TRUE AND VRIJEDNOST < 0";
-
     @Override
     public Senzor get(Integer id) throws DAOException {
         Senzor senzor = null;
@@ -250,23 +247,6 @@ public class H2SenzorDAO implements SenzorDAO {
             throw new DAOException();
         }
         return senzori;
-    }
-
-    @Override
-    public int getNegativeActiveSensors() throws DAOException {
-        int broj = -1;
-
-        try (Connection conn = H2DAOFactory.createConnection();
-             PreparedStatement stmt = DAOUtil.prepareStatement(conn, SQL_SELECT_NEGATIVE_ACTIVE, false);
-             ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                broj = rs.getInt("broj");
-            }
-        } catch (SQLException ex) {
-            LOGGER.error("Error while executing SQL_SELECT_NEGATIVE_ACTIVE: " + ex);
-            throw new DAOException();
-        }
-        return broj;
     }
 
     private Map<String, Object> prepareChildSaveData(Senzor senzor) {
