@@ -13,6 +13,10 @@ public class SenzorTlaka extends Senzor {
         super("°C", (byte) 2);
     }
 
+    public SenzorTlaka(BigDecimal vrijednost, RadSenzora radSenzora) {
+        super("°C", (byte) 2, vrijednost, radSenzora);
+    }
+
     public SenzorTlaka(BigDecimal vrijednost, RadSenzora radSenzora, MjernaPostaja postaja) {
         super("hPa", (byte) 0.2, vrijednost, radSenzora, postaja);
     }

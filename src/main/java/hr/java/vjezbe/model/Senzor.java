@@ -13,9 +13,17 @@ public abstract class Senzor extends BazniEntitet {
     public Senzor() {
     }
 
+
     public Senzor(String mjernaJedinica, byte preciznost) {
         this.mjernaJedinica = mjernaJedinica;
         this.preciznost = preciznost;
+    }
+
+    public Senzor(String mjernaJedinica, byte preciznost, BigDecimal vrijednost, RadSenzora radSenzora) {
+        this.mjernaJedinica = mjernaJedinica;
+        this.preciznost = preciznost;
+        this.vrijednost = vrijednost;
+        this.radSenzora = radSenzora;
     }
 
     public Senzor(String mjernaJedinica, byte preciznost, BigDecimal vrijednost, RadSenzora radSenzora, MjernaPostaja postaja) {

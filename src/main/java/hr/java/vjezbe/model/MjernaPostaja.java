@@ -19,6 +19,12 @@ public class MjernaPostaja extends BazniEntitet {
     public MjernaPostaja() {
     }
 
+    public MjernaPostaja(String naziv, Mjesto mjesto, GeografskaTocka geografskaTocka) {
+        this.naziv = naziv;
+        this.mjesto = mjesto;
+        this.geografskaTocka = geografskaTocka;
+    }
+
     public MjernaPostaja(String naziv, Mjesto mjesto, GeografskaTocka geografskaTocka, List<Senzor> senzori) {
         this.naziv = naziv;
         this.mjesto = mjesto;

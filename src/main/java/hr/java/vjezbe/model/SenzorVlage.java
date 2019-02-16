@@ -13,6 +13,10 @@ public class SenzorVlage extends Senzor {
         super("°C", (byte) 2);
     }
 
+    public SenzorVlage(BigDecimal vrijednost, RadSenzora radSenzora) {
+        super("°C", (byte) 2, vrijednost, radSenzora);
+    }
+
     public SenzorVlage(BigDecimal vrijednost, RadSenzora radSenzora, MjernaPostaja postaja) {
         super("%", (byte) 10, vrijednost, radSenzora,postaja);
     }

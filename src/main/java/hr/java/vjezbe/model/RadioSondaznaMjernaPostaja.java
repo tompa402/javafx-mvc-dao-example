@@ -19,6 +19,11 @@ public class RadioSondaznaMjernaPostaja extends MjernaPostaja implements RadioSo
         this.visinaPostaje = visinaPostaje;
     }
 
+    public RadioSondaznaMjernaPostaja(String naziv, Mjesto mjesto, GeografskaTocka geografskaTocka, Integer visinaPostaje) {
+        super(naziv, mjesto, geografskaTocka);
+        this.visinaPostaje = visinaPostaje;
+    }
+
     /**
      * Inicijalizira podatak o identifikatoru, visini postaje, nazivu, mjestu, koordinatama te pripradajućim senzorima
      *

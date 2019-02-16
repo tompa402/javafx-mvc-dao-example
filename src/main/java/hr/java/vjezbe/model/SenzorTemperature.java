@@ -19,6 +19,11 @@ public class SenzorTemperature extends Senzor {
         super("°C", (byte) 2);
     }
 
+    public SenzorTemperature(String naziv, BigDecimal vrijednost, RadSenzora radSenzora) {
+        super("°C", (byte) 2, vrijednost, radSenzora);
+        this.naziv = naziv;
+    }
+
     public SenzorTemperature(String naziv, BigDecimal vrijednost, RadSenzora radSenzora, MjernaPostaja postaja) {
         super("°C", (byte) 2, vrijednost, radSenzora, postaja);
         this.naziv = naziv;
