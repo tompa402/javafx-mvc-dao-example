@@ -1,6 +1,6 @@
 package hr.java.vjezbe.data;
 
-import hr.java.vjezbe.javafx.model.Mjesto;
+import hr.java.vjezbe.model.Mjesto;
 
 import java.util.Set;
 

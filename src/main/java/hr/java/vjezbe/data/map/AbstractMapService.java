@@ -1,6 +1,6 @@
 package hr.java.vjezbe.data.map;
 
-import hr.java.vjezbe.javafx.model.BazniEntitet;
+import hr.java.vjezbe.model.BazniEntitet;
 
 import java.util.*;
 

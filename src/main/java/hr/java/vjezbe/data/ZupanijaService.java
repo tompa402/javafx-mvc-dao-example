@@ -1,6 +1,6 @@
 package hr.java.vjezbe.data;
 
-import hr.java.vjezbe.javafx.model.Zupanija;
+import hr.java.vjezbe.model.Zupanija;
 
 import java.util.Set;
 

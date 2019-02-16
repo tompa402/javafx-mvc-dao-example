@@ -1,8 +1,8 @@
 package hr.java.vjezbe.data.map;
 
 import hr.java.vjezbe.data.DrzavaService;
-import hr.java.vjezbe.javafx.model.Drzava;
-import hr.java.vjezbe.javafx.validator.InputValidator;
+import hr.java.vjezbe.model.Drzava;
+import hr.java.vjezbe.validator.InputValidator;
 import javafx.scene.control.Alert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

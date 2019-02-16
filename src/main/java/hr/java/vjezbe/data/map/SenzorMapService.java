@@ -2,7 +2,7 @@ package hr.java.vjezbe.data.map;
 
 import hr.java.vjezbe.data.PostajaService;
 import hr.java.vjezbe.data.SenzorService;
-import hr.java.vjezbe.javafx.model.*;
+import hr.java.vjezbe.model.*;
 import javafx.scene.control.Alert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

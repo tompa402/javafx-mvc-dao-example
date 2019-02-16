@@ -2,10 +2,10 @@ package hr.java.vjezbe.data.map;
 
 import hr.java.vjezbe.data.MjestoService;
 import hr.java.vjezbe.data.ZupanijaService;
-import hr.java.vjezbe.javafx.model.Mjesto;
-import hr.java.vjezbe.javafx.model.VrstaMjesta;
-import hr.java.vjezbe.javafx.model.Zupanija;
-import hr.java.vjezbe.javafx.validator.InputValidator;
+import hr.java.vjezbe.model.Mjesto;
+import hr.java.vjezbe.model.VrstaMjesta;
+import hr.java.vjezbe.model.Zupanija;
+import hr.java.vjezbe.validator.InputValidator;
 import javafx.scene.control.Alert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
