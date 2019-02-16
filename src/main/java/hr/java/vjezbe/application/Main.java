@@ -17,6 +17,9 @@ public class Main {
     public static void main(String[] args) {
         model = new Model();
         ispisiPostaje();
+        model.getOpcinaService().findAll().forEach(opcina ->
+                System.out.println("Opcini: "+opcina.getNaziv()
+                        + " pripadaju sljedeca mjesta:" + opcina.getMjesta()));
     }
 
     private static void ispisiPostaje() {
@@ -28,6 +31,7 @@ public class Main {
             }
             System.out.println("Naziv mjerne postje: " + postaja.getNaziv());
             System.out.println("Postaja se nalazi u mjestu " + postaja.getMjesto().getNaziv() + " (" + postaja.getMjesto().getVrstaMjesta().name() + "), županiji " + postaja.getMjesto().getZupanija().getNaziv() + ", državi " + postaja.getMjesto().getZupanija().getDrzava().getNaziv());
+            System.out.println("mjesto pripada općini: " + postaja.getMjesto().getOpcina().getNaziv());
             System.out.println("Točne koordinate postaje su x:" + postaja.getGeografskaTocka().getGeoX() + " y:" + postaja.getGeografskaTocka().getGeoY());
             System.out.println("Vrijednosti senzora postaje su:");
             for (Senzor senzor : postaja.getSenzori()) {

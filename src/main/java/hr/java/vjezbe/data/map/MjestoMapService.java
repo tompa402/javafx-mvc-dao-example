@@ -1,8 +1,10 @@
 package hr.java.vjezbe.data.map;
 
 import hr.java.vjezbe.data.MjestoService;
+import hr.java.vjezbe.data.OpcinaService;
 import hr.java.vjezbe.data.ZupanijaService;
 import hr.java.vjezbe.model.Mjesto;
+import hr.java.vjezbe.model.Opcina;
 import hr.java.vjezbe.model.VrstaMjesta;
 import hr.java.vjezbe.model.Zupanija;
 import hr.java.vjezbe.validator.InputValidator;
@@ -24,9 +26,11 @@ public class MjestoMapService extends AbstractMapService<Mjesto, Integer> implem
     private static final Logger LOGGER = LoggerFactory.getLogger(ZupanijaMapService.class);
     private static final String MJESTA_PATH = "src/main/resources/dat/mjesta.txt";
     private final ZupanijaService zupanijaService;
+    private final OpcinaService opcinaService;
 
-    public MjestoMapService(ZupanijaService zupanijaService) {
+    public MjestoMapService(ZupanijaService zupanijaService, OpcinaService opcinaService) {
         this.zupanijaService = zupanijaService;
+        this.opcinaService = opcinaService;
         loadMjestaFromFile();
     }
 
@@ -43,6 +47,7 @@ public class MjestoMapService extends AbstractMapService<Mjesto, Integer> implem
     @Override
     public Mjesto save(Mjesto object) {
         zupanijaService.findById(object.getZupanija().getId()).getMjesta().add(object);
+        opcinaService.findById(object.getOpcina().getId()).getMjesta().add(object);
         return spremiMjesto(super.save(object));
     }
 
@@ -66,13 +71,14 @@ public class MjestoMapService extends AbstractMapService<Mjesto, Integer> implem
     private void loadMjestaFromFile() {
         Integer id = null;
         String naziv = null;
-        Zupanija zupanija;
+        Zupanija zupanija = null;
+        Opcina opcina;
         VrstaMjesta vrstaMjesta = VrstaMjesta.OSTALO;
 
         try (Stream<String> stream = Files.lines(new File(MJESTA_PATH).toPath())) {
             List<String> listaStringova = stream.collect(Collectors.toList());
 
-            int brojRedovaZaMjesta = 4;
+            int brojRedovaZaMjesta = 5;
             for (int i = 0; i < listaStringova.size(); i++) {
                 String red = listaStringova.get(i);
                 switch (i % brojRedovaZaMjesta) {
@@ -85,13 +91,18 @@ public class MjestoMapService extends AbstractMapService<Mjesto, Integer> implem
                     case 2:
                         vrstaMjesta = VrstaMjesta.valueOf(red);
                         break;
-                    case 3: {
+                    case 3:
                         zupanija = zupanijaService.findById(Integer.valueOf(red));
-                        Mjesto mjesto = new Mjesto(id, naziv, zupanija, vrstaMjesta);
+                    break;
+                    case 4:{
+                        opcina = opcinaService.findById(Integer.valueOf(red));
+                        Mjesto mjesto = new Mjesto(id, naziv, zupanija, vrstaMjesta, opcina);
                         zupanijaService.findById(mjesto.getZupanija().getId()).getMjesta().add(mjesto);
+                        opcinaService.findById(mjesto.getOpcina().getId()).getMjesta().add(mjesto);
                         super.save(mjesto);
                     }
                     break;
+
                 }
             }
         } catch (IOException ex) {

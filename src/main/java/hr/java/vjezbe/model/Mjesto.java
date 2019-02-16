@@ -14,6 +14,7 @@ public class Mjesto extends BazniEntitet {
     private Zupanija zupanija;
     private VrstaMjesta vrstaMjesta;
     private List<MjernaPostaja> mjernePostaje;
+    private Opcina opcina;
 
     public Mjesto() {
     }
@@ -39,6 +40,15 @@ public class Mjesto extends BazniEntitet {
         this.zupanija = zupanija;
         this.vrstaMjesta = vrstaMjesta;
         this.mjernePostaje = new ArrayList<>();
+    }
+
+    public Mjesto(int id, String naziv, Zupanija zupanija, VrstaMjesta vrstaMjesta, Opcina opcina) {
+        super.setId(id);
+        this.naziv = naziv;
+        this.zupanija = zupanija;
+        this.vrstaMjesta = vrstaMjesta;
+        this.mjernePostaje = new ArrayList<>();
+        this.opcina = opcina;
     }
 
     public String getNaziv() {
@@ -71,5 +81,24 @@ public class Mjesto extends BazniEntitet {
 
     public void setMjernePostaje(List<MjernaPostaja> mjernePostaje) {
         this.mjernePostaje = mjernePostaje;
+    }
+
+    public Opcina getOpcina() {
+        return opcina;
+    }
+
+    public void setOpcina(Opcina opcina) {
+        this.opcina = opcina;
+    }
+
+    @Override
+    public String toString() {
+        return "Mjesto{" +
+                "naziv='" + naziv + '\'' +
+                ", zupanija=" + zupanija +
+                ", vrstaMjesta=" + vrstaMjesta +
+                ", mjernePostaje=" + mjernePostaje +
+                ", opcina=" + opcina +
+                '}';
     }
 }

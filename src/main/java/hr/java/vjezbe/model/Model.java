@@ -10,6 +10,7 @@ public class Model {
 
     private final DrzavaService drzavaService;
     private final ZupanijaService zupanijaService;
+    private final OpcinaService opcinaService;
     private final MjestoService mjestoService;
     private final PostajaService postajaService;
     private final SenzorService senzorService;
@@ -17,7 +18,8 @@ public class Model {
     public Model() {
         this.drzavaService = new DrzavaMapService();
         this.zupanijaService = new ZupanijaMapService(drzavaService);
-        this.mjestoService = new MjestoMapService(zupanijaService);
+        this.opcinaService = new OpcinaMapService();
+        this.mjestoService = new MjestoMapService(zupanijaService, opcinaService);
         this.postajaService = new PostajaMapService(mjestoService);
         this.senzorService = new SenzorMapService(postajaService);
     }
@@ -28,6 +30,10 @@ public class Model {
 
     public ZupanijaService getZupanijaService() {
         return zupanijaService;
+    }
+
+    public OpcinaService getOpcinaService() {
+        return opcinaService;
     }
 
     public MjestoService getMjestoService() {
