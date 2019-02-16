@@ -2,9 +2,8 @@ package hr.java.vjezbe.javafx.controller;
 
 import hr.java.vjezbe.javafx.application.Main;
 import hr.java.vjezbe.javafx.model.MjernaPostaja;
+import hr.java.vjezbe.javafx.model.Model;
 import hr.java.vjezbe.javafx.model.RadioSondaznaMjernaPostaja;
-import hr.java.vjezbe.javafx.service.MjernaPostajaService;
-import hr.java.vjezbe.javafx.service.implDB.MjernaPostajaServiceImpl;
 import hr.java.vjezbe.javafx.util.NovaPostajaConverter;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -23,8 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 public class PostajeController {
 
@@ -50,13 +47,16 @@ public class PostajeController {
     private TextField nazivFilterTextField;
     @FXML
     private ComboBox<MjernaPostaja> newPostajaCombobox;
+    @FXML
+    private Button deleteButton;
+    @FXML
+    private Button editButton;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostajeController.class);
-    private MjernaPostajaService service;
     private ObservableList<MjernaPostaja> obsPostaje;
+    private Model model;
 
     public PostajeController() {
-        this.service = new MjernaPostajaServiceImpl();
     }
 
     @FXML
@@ -69,20 +69,17 @@ public class PostajeController {
         postajeTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> showPostajaDetails(newValue));
 
+        deleteButton.setDisable(true);
+        editButton.setDisable(true);
+
         newPostajaCombobox.setItems(FXCollections.observableArrayList(
                 Arrays.asList(new MjernaPostaja(), new RadioSondaznaMjernaPostaja())));
         newPostajaCombobox.setConverter(new NovaPostajaConverter());
+    }
 
-        List<MjernaPostaja> listPostaja = service.getAll();
-        if (listPostaja != null) {
-            obsPostaje = FXCollections.observableArrayList(listPostaja);
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Program error");
-            alert.setContentText("If error persist contact your administrator.");
-            alert.showAndWait();
-        }
+    public void setModel(Model model) {
+        this.model = model;
+        obsPostaje = FXCollections.observableArrayList(model.getPostajaService().findAll());
         postajeTable.setItems(obsPostaje);
     }
 
@@ -105,42 +102,17 @@ public class PostajeController {
     }
 
     public void getPostajaByName() {
-        List<MjernaPostaja> listPostaje = service.findByName(nazivFilterTextField.getText());
-        if (listPostaje != null) {
-            obsPostaje = FXCollections.observableArrayList(listPostaje);
-            postajeTable.setItems(obsPostaje);
-            postajeTable.getSelectionModel().selectFirst();
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Program error");
-            alert.setContentText("If error persist contact your administrator.");
-            alert.showAndWait();
-        }
+        obsPostaje = FXCollections.observableArrayList(model.getPostajaService()
+                .findByName(nazivFilterTextField.getText()));
+        postajeTable.setItems(obsPostaje);
+        postajeTable.setItems(obsPostaje);
     }
 
     @FXML
     private void handleDeletePostaja() {
-        MjernaPostaja selectedPostaja = postajeTable.getSelectionModel().getSelectedItem();
-        if (selectedPostaja != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation delete action");
-            alert.setHeaderText("This action will have unwanted consequences");
-            alert.setContentText("Child items like Senzors etc... will also be deleted." +
-                    "\nDo you want to proceed?");
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK) {
-                if (service.delete(selectedPostaja)) {
-                    postajeTable.getItems().remove(selectedPostaja);
-                } else {
-                    Alert alertError = new Alert(Alert.AlertType.ERROR);
-                    alertError.setTitle("Error");
-                    alertError.setHeaderText("Program error");
-                    alertError.setContentText("If error persist contact your administrator.");
-                    alertError.showAndWait();
-                }
-            }
+        int selectedIndex = postajeTable.getSelectionModel().getSelectedIndex();
+        if (selectedIndex >= 0) {
+            postajeTable.getItems().remove(selectedIndex);
         } else {
             // Nothing selected
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -156,16 +128,8 @@ public class PostajeController {
         MjernaPostaja tempPostaja = newPostajaCombobox.getValue();
         boolean okClicked = showPostajaEditDialog(tempPostaja);
         if (okClicked) {
-            if (service.save(tempPostaja) > 0) {
-                obsPostaje.addAll(tempPostaja);
-                showPostajaDetails(tempPostaja);
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Program error");
-                alert.setContentText("If error persist contact your administrator.");
-                alert.showAndWait();
-            }
+            model.getPostajaService().save(tempPostaja);
+            obsPostaje.add(tempPostaja);
         }
 
         // Update GUI component from non-GUI thread
@@ -195,15 +159,7 @@ public class PostajeController {
         if (selectedPostaja != null) {
             boolean okClicked = showPostajaEditDialog(selectedPostaja);
             if (okClicked) {
-                if (service.update(selectedPostaja)) {
-                    showPostajaDetails(selectedPostaja);
-                } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText("Program error");
-                    alert.setContentText("If error persist contact your administrator.");
-                    alert.showAndWait();
-                }
+                showPostajaDetails(selectedPostaja);
             }
 
         } else {
@@ -236,6 +192,7 @@ public class PostajeController {
             PostajaEditDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setPostaja(postaja);
+            controller.setModel(model);
 
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();

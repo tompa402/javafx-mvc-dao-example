@@ -7,23 +7,24 @@ import java.math.BigDecimal;
 public abstract class Senzor extends BazniEntitet {
 
     private StringProperty mjernaJedinica;
-    private ObjectProperty<Double> preciznost;
+    private ObjectProperty<Byte> preciznost;
     private ObjectProperty<BigDecimal> vrijednost;
     private ObjectProperty<RadSenzora> radSenzora;
-    private BooleanProperty active;
     private ObjectProperty<MjernaPostaja> postaja;
 
-    public Senzor() {
-
+    public Senzor(String mjernaJedinica, Byte preciznost, BigDecimal vrijednost, RadSenzora radSenzora) {
+        this.mjernaJedinica = new SimpleStringProperty(mjernaJedinica);
+        this.preciznost = new SimpleObjectProperty<>(preciznost);
+        this.vrijednost = new SimpleObjectProperty<>(vrijednost);
+        this.radSenzora = new SimpleObjectProperty<>(radSenzora);
     }
 
-    public Senzor(Integer id, String mjernaJedinica, Double preciznost, BigDecimal vrijednost, RadSenzora radSenzora, Boolean active, MjernaPostaja postaja) {
+    public Senzor(Integer id, String mjernaJedinica, byte preciznost, BigDecimal vrijednost, RadSenzora radSenzora, MjernaPostaja postaja) {
         super(new SimpleIntegerProperty(id));
         this.mjernaJedinica = new SimpleStringProperty(mjernaJedinica);
         this.preciznost = new SimpleObjectProperty<>(preciznost);
         this.vrijednost = new SimpleObjectProperty<>(vrijednost);
         this.radSenzora = new SimpleObjectProperty<>(radSenzora);
-        this.active = new SimpleBooleanProperty(active == null ? false : active);
         this.postaja = new SimpleObjectProperty<>(postaja);
     }
 
@@ -39,15 +40,15 @@ public abstract class Senzor extends BazniEntitet {
         this.mjernaJedinica.set(mjernaJedinica);
     }
 
-    public Double getPreciznost() {
+    public Byte getPreciznost() {
         return preciznost.get();
     }
 
-    public ObjectProperty<Double> preciznostProperty() {
+    public ObjectProperty<Byte> preciznostProperty() {
         return preciznost;
     }
 
-    public void setPreciznost(Double preciznost) {
+    public void setPreciznost(Byte preciznost) {
         this.preciznost.set(preciznost);
     }
 
@@ -73,18 +74,6 @@ public abstract class Senzor extends BazniEntitet {
 
     public void setRadSenzora(RadSenzora radSenzora) {
         this.radSenzora.set(radSenzora);
-    }
-
-    public boolean getActive() {
-        return active.get();
-    }
-
-    public BooleanProperty activeProperty() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active.set(active);
     }
 
     public MjernaPostaja getPostaja() {

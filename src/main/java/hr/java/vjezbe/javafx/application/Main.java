@@ -1,14 +1,13 @@
 package hr.java.vjezbe.javafx.application;
 
 import hr.java.vjezbe.javafx.controller.PocetniEkranController;
+import hr.java.vjezbe.javafx.model.Model;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,10 +16,12 @@ import java.io.IOException;
 public class Main extends Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
+    private Model model;
     private BorderPane rootLayout;
     private Stage primaryStage;
 
     public Main() {
+        model = new Model();
     }
 
     @Override
@@ -51,6 +52,7 @@ public class Main extends Application {
 
             PocetniEkranController controller = loader.getController();
             controller.setMainApp(this);
+            controller.setModel(model);
         } catch (IOException ex) {
             LOGGER.error("Error occurred while creating initial window: " + ex.getMessage());
         }

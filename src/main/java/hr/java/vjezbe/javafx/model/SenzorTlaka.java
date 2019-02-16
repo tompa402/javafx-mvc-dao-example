@@ -7,14 +7,18 @@ import java.math.BigDecimal;
  *
  * @author Tomislav
  */
-public class SenzorTlaka extends Senzor {
+public class SenzorTlaka extends Senzor{
 
-    public SenzorTlaka() {
-        this(0, null, null, null, null);
+    public SenzorTlaka(){
+        this(0, null, null,null);
     }
 
-    public SenzorTlaka(Integer id, BigDecimal vrijednost, RadSenzora radSenzora, Boolean active, MjernaPostaja postaja) {
-        super(id, "hPa", 0.2, vrijednost, radSenzora, active, postaja);
+    public SenzorTlaka(BigDecimal vrijednost, RadSenzora radSenzora) {
+        super("hPa", (byte) 0.2, vrijednost, radSenzora);
+    }
+
+    public SenzorTlaka(Integer id, BigDecimal vrijednost, RadSenzora radSenzora, MjernaPostaja postaja) {
+        super(id,"hPa", (byte) 0.2, vrijednost, radSenzora, postaja);
     }
 
     public String dohvatiPodatkeSenzora() {

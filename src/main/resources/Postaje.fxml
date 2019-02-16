@@ -65,8 +65,8 @@
                         <ButtonBar layoutX="138.0" layoutY="344.0" prefHeight="40.0" prefWidth="276.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0">
                             <buttons>
                         <ComboBox fx:id="newPostajaCombobox" onAction="#handleNewPostaja" prefHeight="25.0" prefWidth="200.0" promptText="Novo..." />
-                                <Button mnemonicParsing="false" onAction="#handleEditPostaja" text="Uredi..." />
-                                <Button mnemonicParsing="false" onAction="#handleDeletePostaja" text="Obriši" />
+                                <Button fx:id="editButton" mnemonicParsing="false" onAction="#handleEditPostaja" text="Uredi..." />
+                                <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#handleDeletePostaja" text="Obriši" />
                             </buttons>
                         </ButtonBar>
                         <Label layoutX="14.0" layoutY="17.0" text="Pretraga postaja" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="10.0" />

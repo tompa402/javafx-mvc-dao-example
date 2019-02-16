@@ -2,8 +2,7 @@ package hr.java.vjezbe.javafx.controller;
 
 import hr.java.vjezbe.javafx.application.Main;
 import hr.java.vjezbe.javafx.model.Mjesto;
-import hr.java.vjezbe.javafx.service.MjestoService;
-import hr.java.vjezbe.javafx.service.implDB.MjestoServiceImpl;
+import hr.java.vjezbe.javafx.model.Model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 
 public class MjestaController {
 
@@ -40,13 +37,16 @@ public class MjestaController {
     private Label brojPostajaLabel;
     @FXML
     private TextField nazivFilterTextField;
+    @FXML
+    private Button deleteButton;
+    @FXML
+    private Button editButton;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MjestaController.class);
-    private MjestoService service;
     private ObservableList<Mjesto> obsMjesta;
+    private Model model;
 
     public MjestaController() {
-        this.service = new MjestoServiceImpl();
     }
 
     @FXML
@@ -58,17 +58,13 @@ public class MjestaController {
 
         mjestaTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> showMjestoDetails(newValue));
+        deleteButton.setDisable(true);
+        editButton.setDisable(true);
+    }
 
-        List<Mjesto> listMjesta = service.getAll();
-        if (listMjesta != null) {
-            obsMjesta = FXCollections.observableArrayList(listMjesta);
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Program error");
-            alert.setContentText("If error persist contact your administrator.");
-            alert.showAndWait();
-        }
+    public void setModel(Model model) {
+        this.model = model;
+        obsMjesta = FXCollections.observableArrayList(model.getMjestoService().findAll());
         mjestaTable.setItems(obsMjesta);
     }
 
@@ -89,42 +85,16 @@ public class MjestaController {
     }
 
     public void getMjestaByName() {
-        List<Mjesto> listMjesta = service.findByName(nazivFilterTextField.getText());
-        if (listMjesta != null) {
-            obsMjesta = FXCollections.observableArrayList(listMjesta);
-            mjestaTable.setItems(obsMjesta);
-            mjestaTable.getSelectionModel().selectFirst();
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Program error");
-            alert.setContentText("If error persist contact your administrator.");
-            alert.showAndWait();
-        }
+        obsMjesta = FXCollections.observableArrayList(model.getMjestoService()
+                .findByName(nazivFilterTextField.getText()));
+        mjestaTable.setItems(obsMjesta);
     }
 
     @FXML
     private void handleDeleteMjesto() {
-        Mjesto selectedMjesto = mjestaTable.getSelectionModel().getSelectedItem();
-        if (selectedMjesto != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation delete action");
-            alert.setHeaderText("This action will have unwanted consequences");
-            alert.setContentText("Child items like MjernaPostaja, Senzor etc... will also be deleted." +
-                    "\nDo you want to proceed?");
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK) {
-                if (service.delete(selectedMjesto)) {
-                    mjestaTable.getItems().remove(selectedMjesto);
-                } else {
-                    Alert alertError = new Alert(Alert.AlertType.ERROR);
-                    alertError.setTitle("Error");
-                    alertError.setHeaderText("Program error");
-                    alertError.setContentText("If error persist contact your administrator.");
-                    alertError.showAndWait();
-                }
-            }
+        int selectedIndex = mjestaTable.getSelectionModel().getSelectedIndex();
+        if (selectedIndex >= 0) {
+            mjestaTable.getItems().remove(selectedIndex);
         } else {
             // Nothing selected
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -140,16 +110,8 @@ public class MjestaController {
         Mjesto tempMjesto = new Mjesto();
         boolean okClicked = showMjestoEditDialog(tempMjesto);
         if (okClicked) {
-            if (service.save(tempMjesto) > 0) {
-                obsMjesta.addAll(tempMjesto);
-                showMjestoDetails(tempMjesto);
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Program error");
-                alert.setContentText("If error persist contact your administrator.");
-                alert.showAndWait();
-            }
+            model.getMjestoService().save(tempMjesto);
+            obsMjesta.add(tempMjesto);
         }
     }
 
@@ -159,22 +121,16 @@ public class MjestaController {
         if (selectedMjesto != null) {
             boolean okClicked = showMjestoEditDialog(selectedMjesto);
             if (okClicked) {
-                if (service.update(selectedMjesto)) {
-                    showMjestoDetails(selectedMjesto);
-                } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText("Program error");
-                    alert.setContentText("If error persist contact your administrator.");
-                    alert.showAndWait();
-                }
+                showMjestoDetails(selectedMjesto);
             }
+
         } else {
             // Nothing selected.
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Uređivanje mjesta");
-            alert.setHeaderText("Nije odabrano mjesto iz tablice.");
+            alert.setHeaderText("Nije odabrano mjesto iz tablice");
             alert.setContentText("Odaberite mjesto iz tablice.");
+
             alert.showAndWait();
         }
     }
@@ -184,7 +140,7 @@ public class MjestaController {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("/MjestoEditDialog.fxml"));
-            AnchorPane page = loader.load();
+            AnchorPane page = (AnchorPane) loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
@@ -199,6 +155,7 @@ public class MjestaController {
             MjestoEditDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setMjesto(mjesto);
+            controller.setModel(model);
 
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();

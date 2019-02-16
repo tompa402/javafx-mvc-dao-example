@@ -64,6 +64,3 @@ Grad Zagreb
 22
 Laško
 2
-23
-test
-4

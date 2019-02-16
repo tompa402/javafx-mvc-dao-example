@@ -2,8 +2,6 @@ package hr.java.vjezbe.javafx.controller;
 
 import hr.java.vjezbe.javafx.application.Main;
 import hr.java.vjezbe.javafx.model.*;
-import hr.java.vjezbe.javafx.service.SenzorService;
-import hr.java.vjezbe.javafx.service.implDB.SenzorServiceImpl;
 import hr.java.vjezbe.javafx.util.NoviSenzorConverter;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,13 +16,11 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.controlsfx.control.ToggleSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 
 public class SenzoriController {
 
@@ -55,15 +51,15 @@ public class SenzoriController {
     @FXML
     private ComboBox<Senzor> newSenzorCombobox;
     @FXML
-    private ToggleSwitch snezorThreadToggle;
+    private Button deleteButton;
+    @FXML
+    private Button editButton;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SenzoriController.class);
-    private final SenzorService service;
     private ObservableList<Senzor> obsSenzori;
     private Model model;
 
     public SenzoriController() {
-        this.service = new SenzorServiceImpl();
     }
 
     @FXML
@@ -86,23 +82,14 @@ public class SenzoriController {
         senzoriTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> showSenzorDetails(newValue));
 
-        snezorThreadToggle.selectedProperty().addListener((observable, oldValue, newValue)
-                -> model.setToggleValue(newValue));
-
         newSenzorCombobox.setItems(FXCollections.observableArrayList(
                 Arrays.asList(new SenzorTemperature(), new SenzorVlage(), new SenzorTlaka())));
         newSenzorCombobox.setConverter(new NoviSenzorConverter());
+    }
 
-        List<Senzor> listSenzori = service.getAll();
-        if (listSenzori != null) {
-            obsSenzori = FXCollections.observableArrayList(listSenzori);
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Program error");
-            alert.setContentText("If error persist contact your administrator.");
-            alert.showAndWait();
-        }
+    public void setModel(Model model) {
+        this.model = model;
+        obsSenzori = FXCollections.observableArrayList(model.getSenzorService().findAll());
         senzoriTable.setItems(obsSenzori);
     }
 
@@ -138,17 +125,9 @@ public class SenzoriController {
 
     @FXML
     private void handleDeleteSenzor() {
-        Senzor selectedSenzor = senzoriTable.getSelectionModel().getSelectedItem();
-        if (selectedSenzor != null) {
-            if (service.delete(selectedSenzor)) {
-                senzoriTable.getItems().remove(selectedSenzor);
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Program error");
-                alert.setContentText("If error persist contact your administrator.");
-                alert.showAndWait();
-            }
+        int selectedIndex = senzoriTable.getSelectionModel().getSelectedIndex();
+        if (selectedIndex >= 0) {
+            senzoriTable.getItems().remove(selectedIndex);
         } else {
             // Nothing selected
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -164,16 +143,8 @@ public class SenzoriController {
         Senzor tempSenzor = newSenzorCombobox.getValue();
         boolean okClicked = showSenzorEditDialog(tempSenzor);
         if (okClicked) {
-            if (service.save(tempSenzor) > 0) {
-                obsSenzori.addAll(tempSenzor);
-                showSenzorDetails(tempSenzor);
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Program error");
-                alert.setContentText("If error persist contact your administrator.");
-                alert.showAndWait();
-            }
+            model.getSenzorService().save(tempSenzor);
+            obsSenzori.add(tempSenzor);
         }
 
         // Update GUI component from non-GUI thread
@@ -203,16 +174,7 @@ public class SenzoriController {
         if (selectedSenzor != null) {
             boolean okClicked = showSenzorEditDialog(selectedSenzor);
             if (okClicked) {
-                if (service.update(selectedSenzor)) {
-                    showSenzorDetails(selectedSenzor);
-                } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText("Program error");
-                    alert.setContentText("If error persist contact your administrator.");
-                    alert.showAndWait();
-                }
-
+                showSenzorDetails(selectedSenzor);
                 // because column Mjesto(naziv) isn't updated automatically
                 senzoriTable.getColumns().get(0).setVisible(false);
                 senzoriTable.getColumns().get(0).setVisible(true);
@@ -249,6 +211,7 @@ public class SenzoriController {
             SenzorEditDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setSenzor(senzor);
+            controller.setModel(model);
 
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();
@@ -258,10 +221,5 @@ public class SenzoriController {
             LOGGER.error("Error occurred while creating new/edit dialog: " + ex.getMessage());
             return false;
         }
-    }
-
-    public void setModel(Model model) {
-        this.model = model;
-        snezorThreadToggle.setSelected(model.getToggleValue());
     }
 }

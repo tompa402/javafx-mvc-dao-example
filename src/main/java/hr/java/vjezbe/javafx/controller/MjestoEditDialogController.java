@@ -1,10 +1,9 @@
 package hr.java.vjezbe.javafx.controller;
 
 import hr.java.vjezbe.javafx.model.Mjesto;
+import hr.java.vjezbe.javafx.model.Model;
 import hr.java.vjezbe.javafx.model.VrstaMjesta;
 import hr.java.vjezbe.javafx.model.Zupanija;
-import hr.java.vjezbe.javafx.service.ZupanijaService;
-import hr.java.vjezbe.javafx.service.implDB.ZupanijaServiceImpl;
 import hr.java.vjezbe.javafx.util.ZupanijaConverter;
 import hr.java.vjezbe.javafx.validator.InputValidator;
 import javafx.collections.FXCollections;
@@ -26,14 +25,15 @@ public class MjestoEditDialogController {
     private Stage dialogStage;
     private Mjesto mjesto;
     private boolean okClicked = false;
-
-    private ZupanijaService zupanijaService;
+    private Model model;
 
     @FXML
     private void initialize() {
-        this.zupanijaService = new ZupanijaServiceImpl();
+    }
 
-        zupanijaCombobox.setItems(FXCollections.observableArrayList(zupanijaService.getAll()));
+    public void setModel(Model model) {
+        this.model = model;
+        zupanijaCombobox.setItems(FXCollections.observableArrayList(model.getZupanijaService().findAll()));
         zupanijaCombobox.setConverter(new ZupanijaConverter());
         vrstaCombobox.getItems().setAll(VrstaMjesta.values());
     }

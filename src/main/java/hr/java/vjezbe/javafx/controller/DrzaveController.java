@@ -2,8 +2,7 @@ package hr.java.vjezbe.javafx.controller;
 
 import hr.java.vjezbe.javafx.application.Main;
 import hr.java.vjezbe.javafx.model.Drzava;
-import hr.java.vjezbe.javafx.service.DrzavaService;
-import hr.java.vjezbe.javafx.service.implDB.DrzavaServiceImpl;
+import hr.java.vjezbe.javafx.model.Model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 
 public class DrzaveController {
 
@@ -38,13 +35,16 @@ public class DrzaveController {
     private Label zupanijaLabel;
     @FXML
     private TextField nazivFilterTextField;
+    @FXML
+    private Button deleteButton;
+    @FXML
+    private Button editButton;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DrzaveController.class);
-    private DrzavaService service;
     private ObservableList<Drzava> obsDrzave;
+    private Model model;
 
     public DrzaveController() {
-        this.service = new DrzavaServiceImpl();
     }
 
     @FXML
@@ -56,17 +56,13 @@ public class DrzaveController {
 
         drzavaTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> showDrzavaDetails(newValue));
+        deleteButton.setDisable(true);
+        editButton.setDisable(true);
+    }
 
-        List<Drzava> listDrzave = service.getAll();
-        if (listDrzave != null) {
-            obsDrzave = FXCollections.observableArrayList(listDrzave);
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Program error");
-            alert.setContentText("If error persist contact your administrator.");
-            alert.showAndWait();
-        }
+    public void setModel(Model model) {
+        this.model = model;
+        obsDrzave = FXCollections.observableArrayList(model.getDrzavaService().findAll());
         drzavaTable.setItems(obsDrzave);
     }
 
@@ -86,43 +82,16 @@ public class DrzaveController {
 
     @FXML
     private void getDrzavaByName() {
-        List<Drzava> listDrzava = service.findByName(nazivFilterTextField.getText());
-        if (listDrzava != null) {
-            obsDrzave = FXCollections.observableArrayList(listDrzava);
-            drzavaTable.setItems(obsDrzave);
-            drzavaTable.getSelectionModel().selectFirst();
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Program error");
-            alert.setContentText("If error persist contact your administrator.");
-            alert.showAndWait();
-        }
+        obsDrzave = FXCollections.observableArrayList(model.getDrzavaService()
+                .findByName(nazivFilterTextField.getText()));
+        drzavaTable.setItems(obsDrzave);
     }
 
     @FXML
     private void handleDeleteDrzava() {
-        Drzava selectedDrzava = drzavaTable.getSelectionModel().getSelectedItem();
-        if (selectedDrzava != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation delete action");
-            alert.setHeaderText("This action will have unwanted consequences");
-            alert.setContentText("Child items like Županija, Mjesto, etc... will also be deleted." +
-                    "\nDo you want to proceed?");
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK) {
-                if (service.delete(selectedDrzava)) {
-                    drzavaTable.getItems().remove(selectedDrzava);
-                } else {
-                    Alert alertError = new Alert(Alert.AlertType.ERROR);
-                    alertError.setTitle("Error");
-                    alertError.setHeaderText("Program error");
-                    alertError.setContentText("If error persist contact your administrator.");
-                    alertError.showAndWait();
-                }
-            }
-
+        int selectedIndex = drzavaTable.getSelectionModel().getSelectedIndex();
+        if (selectedIndex >= 0) {
+            drzavaTable.getItems().remove(selectedIndex);
         } else {
             // Nothing selected
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -138,17 +107,8 @@ public class DrzaveController {
         Drzava tempDrzava = new Drzava();
         boolean okClicked = showDrzavaEditDialog(tempDrzava);
         if (okClicked) {
-            if (service.save(tempDrzava) > 0) {
-                obsDrzave.add(tempDrzava);
-                showDrzavaDetails(tempDrzava);
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Program error");
-                alert.setContentText("If error persist contact your administrator.");
-                alert.showAndWait();
-            }
-
+            model.getDrzavaService().save(tempDrzava);
+            obsDrzave.add(tempDrzava);
         }
     }
 
@@ -158,22 +118,16 @@ public class DrzaveController {
         if (selectedDrzava != null) {
             boolean okClicked = showDrzavaEditDialog(selectedDrzava);
             if (okClicked) {
-                if (service.update(selectedDrzava)) {
-                    showDrzavaDetails(selectedDrzava);
-                } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText("Program error");
-                    alert.setContentText("If error persist contact your administrator.");
-                    alert.showAndWait();
-                }
+                showDrzavaDetails(selectedDrzava);
             }
+
         } else {
             // Nothing selected.
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Uređivanje države");
             alert.setHeaderText("Nije odabrana država iz tablice");
             alert.setContentText("Odaberite dražavu iz tablice.");
+
             alert.showAndWait();
         }
     }
@@ -183,7 +137,7 @@ public class DrzaveController {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("/DrzavaEditDialog.fxml"));
-            AnchorPane page = loader.load();
+            AnchorPane page = (AnchorPane) loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();

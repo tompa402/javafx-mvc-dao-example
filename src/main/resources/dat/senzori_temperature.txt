@@ -1,20 +1,8 @@
 1
 nepoznato
-25
-OSTALO
-1
 2
 DTH11
-11
-PING
-2
 3
 X2X
-28
-STREAMING
-3
 10
 novi temperaturni
-24
-STREAMING
-5

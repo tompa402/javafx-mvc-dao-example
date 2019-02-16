@@ -1,9 +1,9 @@
-package hr.java.vjezbe.javafx.service;
+package hr.java.vjezbe.data;
 
 import hr.java.vjezbe.javafx.model.Mjesto;
 
-import java.util.List;
+import java.util.Set;
 
 public interface MjestoService extends CrudService<Mjesto, Integer> {
-    List<Mjesto> findByName(String name);
+    Set<Mjesto> findByName(String name);
 }

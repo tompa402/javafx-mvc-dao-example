@@ -17,12 +17,17 @@ public class SenzorTemperature extends Senzor {
 
     private StringProperty naziv;
 
-    public SenzorTemperature() {
-        this(0, null, null, null, null, null);
+    public SenzorTemperature(){
+        this(0, null, null,null, null);
     }
 
-    public SenzorTemperature(Integer id, String naziv, BigDecimal vrijednost, RadSenzora radSenzora, Boolean active, MjernaPostaja postaja) {
-        super(id, "°C", 2.0, vrijednost, radSenzora, active, postaja);
+    public SenzorTemperature(String naziv, BigDecimal vrijednost, RadSenzora radSenzora) {
+        super("°C", (byte) 2, vrijednost, radSenzora);
+        this.naziv = new SimpleStringProperty(naziv);
+    }
+
+    public SenzorTemperature(Integer id, String naziv, BigDecimal vrijednost, RadSenzora radSenzora, MjernaPostaja postaja) {
+        super(id, "°C", (byte) 2, vrijednost, radSenzora, postaja);
         this.naziv = new SimpleStringProperty(naziv);
     }
 

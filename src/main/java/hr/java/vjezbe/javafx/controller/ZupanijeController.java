@@ -1,9 +1,8 @@
 package hr.java.vjezbe.javafx.controller;
 
 import hr.java.vjezbe.javafx.application.Main;
+import hr.java.vjezbe.javafx.model.Model;
 import hr.java.vjezbe.javafx.model.Zupanija;
-import hr.java.vjezbe.javafx.service.ZupanijaService;
-import hr.java.vjezbe.javafx.service.implDB.ZupanijaServiceImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 
 public class ZupanijeController {
 
@@ -38,13 +35,16 @@ public class ZupanijeController {
     private Label mjestaLabel;
     @FXML
     private TextField nazivFilterTextField;
+    @FXML
+    private Button deleteButton;
+    @FXML
+    private Button editButton;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZupanijeController.class);
-    private ZupanijaService service;
     private ObservableList<Zupanija> obsZupanije;
+    private Model model;
 
     public ZupanijeController() {
-        this.service = new ZupanijaServiceImpl();
     }
 
     @FXML
@@ -56,17 +56,13 @@ public class ZupanijeController {
 
         zupanijaTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> showZupanijaDetails(newValue));
+        deleteButton.setDisable(true);
+        editButton.setDisable(true);
+    }
 
-        List<Zupanija> listZupanije = service.getAll();
-        if (listZupanije != null) {
-            obsZupanije = FXCollections.observableArrayList(listZupanije);
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Program error");
-            alert.setContentText("If error persist contact your administrator.");
-            alert.showAndWait();
-        }
+    public void setModel(Model model) {
+        this.model = model;
+        obsZupanije = FXCollections.observableArrayList(model.getZupanijaService().findAll());
         zupanijaTable.setItems(obsZupanije);
     }
 
@@ -85,43 +81,17 @@ public class ZupanijeController {
     }
 
     public void getZupanijaByName() {
-        List<Zupanija> listZupanije = service.findByName(nazivFilterTextField.getText());
-        if (listZupanije != null) {
-            obsZupanije = FXCollections.observableArrayList(listZupanije);
-            zupanijaTable.setItems(obsZupanije);
-            zupanijaTable.getSelectionModel().selectFirst();
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Program error");
-            alert.setContentText("If error persist contact your administrator.");
-            alert.showAndWait();
-        }
-
+        obsZupanije = FXCollections.observableArrayList(model.getZupanijaService()
+                .findByName(nazivFilterTextField.getText()));
+        zupanijaTable.setItems(obsZupanije);
     }
+
 
     @FXML
     private void handleDeleteZupanija() {
-        Zupanija selectedZupanija = zupanijaTable.getSelectionModel().getSelectedItem();
-        if (selectedZupanija != null) {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation delete action");
-            alert.setHeaderText("This action will have unwanted consequences");
-            alert.setContentText("Child items like Mjesto, MjernaPostaja etc... will also be deleted." +
-                    "\nDo you want to proceed?");
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK) {
-                if (service.delete(selectedZupanija)) {
-                    zupanijaTable.getItems().remove(selectedZupanija);
-                } else {
-                    Alert alertError = new Alert(Alert.AlertType.ERROR);
-                    alertError.setTitle("Error");
-                    alertError.setHeaderText("Program error");
-                    alertError.setContentText("If error persist contact your administrator.");
-                    alertError.showAndWait();
-                }
-            }
+        int selectedIndex = zupanijaTable.getSelectionModel().getSelectedIndex();
+        if (selectedIndex >= 0) {
+            zupanijaTable.getItems().remove(selectedIndex);
         } else {
             // Nothing selected
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -137,16 +107,8 @@ public class ZupanijeController {
         Zupanija tempZupanija = new Zupanija();
         boolean okClicked = showZupanijaEditDialog(tempZupanija);
         if (okClicked) {
-            if (service.save(tempZupanija) > 0) {
-                obsZupanije.add(tempZupanija);
-                showZupanijaDetails(tempZupanija);
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setHeaderText("Program error");
-                alert.setContentText("If error persist contact your administrator.");
-                alert.showAndWait();
-            }
+            model.getZupanijaService().save(tempZupanija);
+            obsZupanije.add(tempZupanija);
         }
     }
 
@@ -156,22 +118,16 @@ public class ZupanijeController {
         if (selectedZupanija != null) {
             boolean okClicked = showZupanijaEditDialog(selectedZupanija);
             if (okClicked) {
-                if (service.update(selectedZupanija)) {
-                    showZupanijaDetails(selectedZupanija);
-                } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText("Program error");
-                    alert.setContentText("If error persist contact your administrator.");
-                    alert.showAndWait();
-                }
+                showZupanijaDetails(selectedZupanija);
             }
+
         } else {
             // Nothing selected.
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Uređivanje županije");
             alert.setHeaderText("Nije odabrana županija iz tablice");
             alert.setContentText("Odaberite županiju iz tablice.");
+
             alert.showAndWait();
         }
     }
@@ -181,7 +137,7 @@ public class ZupanijeController {
             // Load the fxml file and create a new stage for the popup dialog.
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(Main.class.getResource("/ZupanijaEditDialog.fxml"));
-            AnchorPane page = loader.load();
+            AnchorPane page = (AnchorPane) loader.load();
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
@@ -196,6 +152,7 @@ public class ZupanijeController {
             ZupanijaEditDialogController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setZupanija(zupanija);
+            controller.setModel(model);
 
             // Show the dialog and wait until the user closes it
             dialogStage.showAndWait();

@@ -1,11 +1,6 @@
 package hr.java.vjezbe.javafx.controller;
 
-import hr.java.vjezbe.javafx.model.GeografskaTocka;
-import hr.java.vjezbe.javafx.model.MjernaPostaja;
-import hr.java.vjezbe.javafx.model.Mjesto;
-import hr.java.vjezbe.javafx.model.RadioSondaznaMjernaPostaja;
-import hr.java.vjezbe.javafx.service.MjestoService;
-import hr.java.vjezbe.javafx.service.implDB.MjestoServiceImpl;
+import hr.java.vjezbe.javafx.model.*;
 import hr.java.vjezbe.javafx.util.MjestoConverter;
 import hr.java.vjezbe.javafx.validator.InputValidator;
 import javafx.collections.FXCollections;
@@ -36,15 +31,22 @@ public class PostajaEditDialogController {
     private Stage dialogStage;
     private MjernaPostaja postaja;
     private boolean okClicked = false;
-
-    private MjestoService service;
+    private Model model;
 
     @FXML
     private void initialize() {
-        this.service = new MjestoServiceImpl();
 
-        mjestoCombobox.setItems(FXCollections.observableArrayList(service.getAll()));
+    }
+
+    public void setModel(Model model) {
+        this.model = model;
+        mjestoCombobox.setItems(FXCollections.observableArrayList(model.getMjestoService().findAll()));
         mjestoCombobox.setConverter(new MjestoConverter());
+
+        if (postaja instanceof RadioSondaznaMjernaPostaja) {
+            visinaField.setVisible(true);
+            visinaLabel.setVisible(true);
+        }
     }
 
     public void setDialogStage(Stage dialogStage) {
@@ -53,11 +55,6 @@ public class PostajaEditDialogController {
 
     public void setPostaja(MjernaPostaja postaja) {
         this.postaja = postaja;
-        if (postaja instanceof RadioSondaznaMjernaPostaja) {
-            visinaField.setVisible(true);
-            visinaLabel.setVisible(true);
-        }
-
         nazivField.setText(postaja.getNaziv());
         mjestoCombobox.getSelectionModel().select(postaja.getMjesto());
         if (postaja.getId() != 0) {

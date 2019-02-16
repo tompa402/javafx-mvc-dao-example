@@ -9,12 +9,16 @@ import java.math.BigDecimal;
  */
 public class SenzorVlage extends Senzor {
 
-    public SenzorVlage() {
-        this(0, null, null, null, null);
+    public SenzorVlage(){
+        this(0, null, null,null);
     }
 
-    public SenzorVlage(Integer id, BigDecimal vrijednost, RadSenzora radSenzora, Boolean active, MjernaPostaja postaja) {
-        super(id, "%", 10.0, vrijednost, radSenzora, active, postaja);
+    public SenzorVlage(BigDecimal vrijednost, RadSenzora radSenzora) {
+        super("%", (byte) 10, vrijednost, radSenzora);
+    }
+
+    public SenzorVlage(Integer id, BigDecimal vrijednost, RadSenzora radSenzora, MjernaPostaja postaja) {
+        super(id,"%", (byte) 10, vrijednost, radSenzora, postaja);
     }
 
     public String dohvatiPodatkeSenzora() {

@@ -1,9 +1,8 @@
 package hr.java.vjezbe.javafx.controller;
 
 import hr.java.vjezbe.javafx.model.Drzava;
+import hr.java.vjezbe.javafx.model.Model;
 import hr.java.vjezbe.javafx.model.Zupanija;
-import hr.java.vjezbe.javafx.service.DrzavaService;
-import hr.java.vjezbe.javafx.service.implDB.DrzavaServiceImpl;
 import hr.java.vjezbe.javafx.util.DrzavaConverter;
 import hr.java.vjezbe.javafx.validator.InputValidator;
 import javafx.collections.FXCollections;
@@ -14,6 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class ZupanijaEditDialogController {
+
     @FXML
     private TextField nazivField;
     @FXML
@@ -22,14 +22,15 @@ public class ZupanijaEditDialogController {
     private Stage dialogStage;
     private Zupanija zupanija;
     private boolean okClicked = false;
-
-    private DrzavaService drzavaService;
+    private Model model;
 
     @FXML
     private void initialize() {
-        this.drzavaService = new DrzavaServiceImpl();
+    }
 
-        drzavaCombobox.setItems(FXCollections.observableArrayList(drzavaService.getAll()));
+    public void setModel(Model model) {
+        this.model = model;
+        drzavaCombobox.setItems(FXCollections.observableArrayList(model.getDrzavaService().findAll()));
         drzavaCombobox.setConverter(new DrzavaConverter());
     }
 

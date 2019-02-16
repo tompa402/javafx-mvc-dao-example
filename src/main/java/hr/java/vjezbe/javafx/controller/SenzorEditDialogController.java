@@ -1,13 +1,6 @@
 package hr.java.vjezbe.javafx.controller;
 
-import hr.java.vjezbe.javafx.application.Main;
-import hr.java.vjezbe.javafx.model.MjernaPostaja;
-import hr.java.vjezbe.javafx.model.RadSenzora;
-import hr.java.vjezbe.javafx.model.Senzor;
-import hr.java.vjezbe.javafx.model.SenzorTemperature;
-import hr.java.vjezbe.javafx.service.MjernaPostajaService;
-import hr.java.vjezbe.javafx.service.implDB.MjernaPostajaServiceImpl;
-import hr.java.vjezbe.javafx.service.implDB.MjestoServiceImpl;
+import hr.java.vjezbe.javafx.model.*;
 import hr.java.vjezbe.javafx.util.PostajaConverter;
 import hr.java.vjezbe.javafx.validator.InputValidator;
 import javafx.collections.FXCollections;
@@ -36,17 +29,23 @@ public class SenzorEditDialogController {
     private Stage dialogStage;
     private Senzor senzor;
     private boolean okClicked = false;
-
-    private MjernaPostajaService service;
+    private Model model;
 
     @FXML
     private void initialize() {
-        this.service = new MjernaPostajaServiceImpl();
 
+    }
+
+    public void setModel(Model model) {
+        this.model = model;
         radSenzoraComboBox.setItems(FXCollections.observableArrayList(RadSenzora.values()));
-        postajaComboBox.setItems(FXCollections.observableArrayList(service.getAll()));
+        postajaComboBox.setItems(FXCollections.observableArrayList(model.getPostajaService().findAll()));
         postajaComboBox.setConverter(new PostajaConverter());
 
+        if (senzor instanceof SenzorTemperature) {
+            nazivField.setVisible(true);
+            nazivLabel.setVisible(true);
+        }
     }
 
     public void setDialogStage(Stage dialogStage) {
@@ -55,10 +54,6 @@ public class SenzorEditDialogController {
 
     public void setSenzor(Senzor senzor) {
         this.senzor = senzor;
-        if (senzor instanceof SenzorTemperature) {
-            nazivField.setVisible(true);
-            nazivLabel.setVisible(true);
-        }
 
         radSenzoraComboBox.getSelectionModel().select(senzor.getRadSenzora());
         postajaComboBox.getSelectionModel().select(senzor.getPostaja());
@@ -99,7 +94,7 @@ public class SenzorEditDialogController {
         nazivField.getStyleClass().remove("error");
         vrijednostField.getStyleClass().remove("error");
 
-        if(senzor instanceof SenzorTemperature){
+        if (senzor instanceof SenzorTemperature) {
             if (InputValidator.isNullOrEmpty(nazivField.getText())) {
                 errorMessage += "Naziv nije ispravano unesen\n";
                 nazivField.getStyleClass().add("error");
