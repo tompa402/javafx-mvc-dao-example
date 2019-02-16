@@ -71,6 +71,7 @@ public class PostajeController {
 
         deleteButton.setDisable(true);
         editButton.setDisable(true);
+        newPostajaCombobox.setDisable(true);
 
         newPostajaCombobox.setItems(FXCollections.observableArrayList(
                 Arrays.asList(new MjernaPostaja(), new RadioSondaznaMjernaPostaja())));

@@ -57,7 +57,7 @@
                         </GridPane>
                         <ButtonBar layoutX="138.0" layoutY="344.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0">
                             <buttons>
-                                <Button mnemonicParsing="false" onAction="#handleNewZupanija" text="Novo..." />
+                                <Button fx:id="newButton" mnemonicParsing="false" onAction="#handleNewZupanija" text="Novo..." />
                                 <Button fx:id="editButton" mnemonicParsing="false" onAction="#handleEditZupanija" text="Uredi..." />
                                 <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#handleDeleteZupanija" text="Obriši" />
                             </buttons>

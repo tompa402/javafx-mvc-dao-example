@@ -39,6 +39,8 @@ public class DrzaveController {
     private Button deleteButton;
     @FXML
     private Button editButton;
+    @FXML
+    private Button newButton;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DrzaveController.class);
     private ObservableList<Drzava> obsDrzave;
@@ -58,6 +60,7 @@ public class DrzaveController {
                 (observable, oldValue, newValue) -> showDrzavaDetails(newValue));
         deleteButton.setDisable(true);
         editButton.setDisable(true);
+        newButton.setDisable(true);
     }
 
     public void setModel(Model model) {

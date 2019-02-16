@@ -39,6 +39,8 @@ public class ZupanijeController {
     private Button deleteButton;
     @FXML
     private Button editButton;
+    @FXML
+    private Button newButton;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZupanijeController.class);
     private ObservableList<Zupanija> obsZupanije;
@@ -58,6 +60,7 @@ public class ZupanijeController {
                 (observable, oldValue, newValue) -> showZupanijaDetails(newValue));
         deleteButton.setDisable(true);
         editButton.setDisable(true);
+        newButton.setDisable(true);
     }
 
     public void setModel(Model model) {

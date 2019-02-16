@@ -41,6 +41,8 @@ public class MjestaController {
     private Button deleteButton;
     @FXML
     private Button editButton;
+    @FXML
+    private Button newButton;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MjestaController.class);
     private ObservableList<Mjesto> obsMjesta;
@@ -60,6 +62,7 @@ public class MjestaController {
                 (observable, oldValue, newValue) -> showMjestoDetails(newValue));
         deleteButton.setDisable(true);
         editButton.setDisable(true);
+        newButton.setDisable(true);
     }
 
     public void setModel(Model model) {

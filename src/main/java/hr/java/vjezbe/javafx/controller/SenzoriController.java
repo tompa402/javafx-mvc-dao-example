@@ -55,6 +55,7 @@ public class SenzoriController {
     @FXML
     private Button editButton;
 
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SenzoriController.class);
     private ObservableList<Senzor> obsSenzori;
     private Model model;
@@ -85,6 +86,9 @@ public class SenzoriController {
         newSenzorCombobox.setItems(FXCollections.observableArrayList(
                 Arrays.asList(new SenzorTemperature(), new SenzorVlage(), new SenzorTlaka())));
         newSenzorCombobox.setConverter(new NoviSenzorConverter());
+        deleteButton.setDisable(true);
+        editButton.setDisable(true);
+        newSenzorCombobox.setDisable(true);
     }
 
     public void setModel(Model model) {
